@@ -33,7 +33,10 @@ FarmTab:AddToggle({
     Name = "Fast Attack",
     Default = false,
     Callback = function(Value)
-        local plr = game.Players.LocalPlayer
+        local SuperFastMode = false -- Change to true if you want Super Super Super Fast attack (Like instant kill) but it will make the game kick you more than normal mode
+
+
+local plr = game.Players.LocalPlayer
 
 local CbFw = debug.getupvalues(require(plr.PlayerScripts.CombatFramework))
 local CbFw2 = CbFw[2]
@@ -101,7 +104,6 @@ end
 while cac() do 
     AttackNoCD()
 end
-	end
         _G.AttackNoCD = Value
     end
 })
