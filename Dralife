@@ -31,7 +31,7 @@ setfpscap(15)
 
 
 Tab:AddToggle({
-	Name = "This is a toggle!",
+	Name = "fast attack!",
 	Default = false,
 	Callback = function(Value)
         local SuperFastMode = false -- Change to true if you want Super Super Super Fast attack (Like instant kill) but it will make the game kick you more than normal mode
@@ -105,6 +105,7 @@ end
 while cac() do 
     AttackNoCD()
 end
+        print(Value)
 	end    
 })
 
