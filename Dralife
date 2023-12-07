@@ -104,7 +104,7 @@ end
 while cac() do 
     AttackNoCD()
 end
-		print(Value)
+		_G.AttackNoCd = value
 	end    
 })
 
