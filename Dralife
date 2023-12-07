@@ -1,0 +1,82 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "Test Hub", HidePremium = false, IntroText = "Test Hub", SaveConfig = true, ConfigFolder = "OrionTest"})
+
+repeat wait() until game.Players
+    repeat wait() until game.Players.LocalPlayer
+    repeat wait() until game.ReplicatedStorage
+    repeat wait() until game.ReplicatedStorage:FindFirstChild("Remotes");
+    repeat wait() until game:GetService("ReplicatedStorage").Effect.Container
+    repeat wait() until game.Players.LocalPlayer:FindFirstChild("PlayerGui");
+    repeat wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main");
+    repeat wait() until game:GetService("Players")
+    repeat wait() until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Energy")
+
+function Tween(P1)
+    Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+    if Distance < 250 then
+        Speed = 400
+    elseif Distance < 500 then
+        Speed = 300
+    elseif Distance < 1000 then
+        Speed = 250
+    elseif Distance >= 1000 then
+        Speed = 100
+    end
+    game:GetService("TweenService"):Create(
+        game.Players.LocalPlayer.Character.HumanoidRootPart,
+        TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
+        {CFrame = P1}
+    ):Play()
+end
+
+function Tween(P1)
+    Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+    if Distance < 1000 then
+        Speed = 200
+    elseif Distance >= 1000 then
+        Speed = 150
+    end
+    game:GetService("TweenService"):Create(
+        game.Players.LocalPlayer.Character.HumanoidRootPart,
+        TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
+        {CFrame = P1}
+    ):Play()
+    Clip = true
+    wait(Distance/Speed)
+    Clip = false
+end
+
+
+local Tab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+
+Tab:AddButton({
+    Name = "white screen on",
+    Callback = function()
+              print("button pressed")
+  local RunService = game:GetService("RunService")
+RunService:Set3dRenderingEnabled(false)
+setfpscap(15)
+      end
+})
+
+Tab:AddButton({
+    Name = "white screen off",
+    Callback = function()
+              print("button pressed")
+  local RunService = game:GetService("RunService")
+RunService:Set3dRenderingEnabled(true)
+setfpscap(15)
+      end
+})
+
+Tab:AddButton({
+    Name = "Castle On The Sea",
+    Callback = function()
+  Tween(5074.45556640625, 314.5155334472656, -2991.054443359375)
+end
+})
