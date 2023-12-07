@@ -1,50 +1,6 @@
+
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 local Window = OrionLib:MakeWindow({Name = "Test Hub", HidePremium = false, IntroText = "Test Hub", SaveConfig = true, ConfigFolder = "OrionTest"})
-
-repeat wait() until game.Players
-    repeat wait() until game.Players.LocalPlayer
-    repeat wait() until game.ReplicatedStorage
-    repeat wait() until game.ReplicatedStorage:FindFirstChild("Remotes");
-    repeat wait() until game:GetService("ReplicatedStorage").Effect.Container
-    repeat wait() until game.Players.LocalPlayer:FindFirstChild("PlayerGui");
-    repeat wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main");
-    repeat wait() until game:GetService("Players")
-    repeat wait() until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Energy")
-
-function Tween(P1)
-    Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-    if Distance < 250 then
-        Speed = 400
-    elseif Distance < 500 then
-        Speed = 300
-    elseif Distance < 1000 then
-        Speed = 250
-    elseif Distance >= 1000 then
-        Speed = 100
-    end
-    game:GetService("TweenService"):Create(
-        game.Players.LocalPlayer.Character.HumanoidRootPart,
-        TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
-        {CFrame = P1}
-    ):Play()
-end
-
-function Tween(P1)
-    Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-    if Distance < 1000 then
-        Speed = 200
-    elseif Distance >= 1000 then
-        Speed = 150
-    end
-    game:GetService("TweenService"):Create(
-        game.Players.LocalPlayer.Character.HumanoidRootPart,
-        TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
-        {CFrame = P1}
-    ):Play()
-    Clip = true
-    wait(Distance/Speed)
-    Clip = false
-end
 
 
 local Tab = Window:MakeTab({
@@ -52,7 +8,6 @@ local Tab = Window:MakeTab({
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
-
 
 Tab:AddButton({
     Name = "white screen on",
@@ -74,9 +29,82 @@ setfpscap(15)
       end
 })
 
-Tab:AddButton({
-    Name = "Castle On The Sea",
-    Callback = function()
-  Tween(5074.45556640625, 314.5155334472656, -2991.054443359375)
+
+Tab:AddToggle({
+	Name = "This is a toggle!",
+	Default = false,
+	Callback = function(Value)
+        local SuperFastMode = false -- Change to true if you want Super Super Super Fast attack (Like instant kill) but it will make the game kick you more than normal mode
+
+
+local plr = game.Players.LocalPlayer
+
+local CbFw = debug.getupvalues(require(plr.PlayerScripts.CombatFramework))
+local CbFw2 = CbFw[2]
+
+function GetCurrentBlade() 
+    local p13 = CbFw2.activeController
+    local ret = p13.blades[1]
+    if not ret then return end
+    while ret.Parent~=game.Players.LocalPlayer.Character do ret=ret.Parent end
+    return ret
 end
+function AttackNoCD() 
+    local AC = CbFw2.activeController
+    for i = 1, 1 do 
+        local bladehit = require(game.ReplicatedStorage.CombatFramework.RigLib).getBladeHits(
+            plr.Character,
+            {plr.Character.HumanoidRootPart},
+            60
+        )
+        local cac = {}
+        local hash = {}
+        for k, v in pairs(bladehit) do
+            if v.Parent:FindFirstChild("HumanoidRootPart") and not hash[v.Parent] then
+                table.insert(cac, v.Parent.HumanoidRootPart)
+                hash[v.Parent] = true
+            end
+        end
+        bladehit = cac
+        if #bladehit > 0 then
+            local u8 = debug.getupvalue(AC.attack, 5)
+            local u9 = debug.getupvalue(AC.attack, 6)
+            local u7 = debug.getupvalue(AC.attack, 4)
+            local u10 = debug.getupvalue(AC.attack, 7)
+            local u12 = (u8 * 798405 + u7 * 727595) % u9
+            local u13 = u7 * 798405
+            (function()
+                u12 = (u12 * u9 + u13) % 1099511627776
+                u8 = math.floor(u12 / u9)
+                u7 = u12 - u8 * u9
+            end)()
+            u10 = u10 + 1
+            debug.setupvalue(AC.attack, 5, u8)
+            debug.setupvalue(AC.attack, 6, u9)
+            debug.setupvalue(AC.attack, 4, u7)
+            debug.setupvalue(AC.attack, 7, u10)
+            pcall(function()
+                for k, v in pairs(AC.animator.anims.basic) do
+                    v:Play()
+                end
+            end)
+            if plr.Character:FindFirstChildOfClass("Tool") and AC.blades and AC.blades[1] then 
+                game:GetService("ReplicatedStorage").RigControllerEvent:FireServer("weaponChange",tostring(GetCurrentBlade()))
+                game.ReplicatedStorage.Remotes.Validator:FireServer(math.floor(u12 / 1099511627776 * 16777215), u10)
+                game:GetService("ReplicatedStorage").RigControllerEvent:FireServer("hit", bladehit, i, "") 
+            end
+        end
+    end
+end
+local cac
+if SuperFastMode then 
+    cac=task.wait
+else
+    cac=wait
+end
+while cac() do 
+    AttackNoCD()
+end
+	end    
 })
+
