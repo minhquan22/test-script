@@ -105,7 +105,7 @@ local Section = M:AddSection({
     Name = "FastAttack :"
 })
 
-M:AddToggle({
+MainTab:AddToggle({
     Name = "FastAttack",
     Default = true,
     Flag = "FastAttack",
