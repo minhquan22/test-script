@@ -30,6 +30,14 @@ setfpscap(15)
 })
 
 
+
+
+MainTab:AddToggle({
+    Name = "FastAttack",
+    Default = true,
+    Flag = "FastAttack",
+    Save = false,
+    Callback = function(Value)
         local SuperFastMode = false -- Change to true if you want Super Super Super Fast attack (Like instant kill) but it will make the game kick you more than normal mode
 
 
@@ -104,13 +112,6 @@ end
 local Section = M:AddSection({
     Name = "FastAttack :"
 })
-
-MainTab:AddToggle({
-    Name = "FastAttack",
-    Default = true,
-    Flag = "FastAttack",
-    Save = false,
-    Callback = function(Value)
         _G.FastAttack = Value
     end    
 })
