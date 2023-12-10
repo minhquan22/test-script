@@ -29,9 +29,10 @@ setfpscap(15)
       end
 })
 
-Tab:AddButton({
-    Name = "Fast attack",
-    Callback = function()
+FarmTab:AddToggle({
+	Name = "fast attack",
+	Default = false,
+	Callback = function(Value)
         _G.AttackNoCD = Value
       end
 })
