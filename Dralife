@@ -19,7 +19,15 @@ local Tab = Window:MakeTab({
     PremiumOnly = false
 })
 
-Tab:AddButton({
+FarmTab:AddToggle({
+	Name = "Fast Attack",
+	Default = false,
+	Callback = function(Value)
+		_G.AttackNoCD = Value
+	end    
+})
+
+FarmTab:AddButton({
     Name = "white screen on",
     Callback = function()
               print("button pressed")
@@ -29,7 +37,7 @@ setfpscap(15)
       end
 })
 
-Tab:AddButton({
+FarmTab:AddButton({
     Name = "white screen off",
     Callback = function()
               print("button pressed")
@@ -39,20 +47,9 @@ setfpscap(15)
       end
 })
 
-FarmTab:AddToggle({
-	Name = "Fast Attack",
-	Default = false,
-	Callback = function(Value)
-		_G.AttackNoCD = Value
-	end    
-})
 
 
-
-
-
-
------Func
+-----Function fasttack
 local SuperFastMode = false -- Change to true if you want Super Super Super Fast attack (Like instant kill) but it will make the game kick you more than normal mode
 
 
