@@ -2722,7 +2722,7 @@ local WeaponList = {"Melee","Sword","Fruit","Gun"}
 _G.SelectWeapon = "Melee"
 M:AddDropdown({
     Name = "Select Weapon",
-    Default = "Melee",
+    Default = "",
     Options = WeaponList,
     Flag = "Select Weapon",
     Save = true,
