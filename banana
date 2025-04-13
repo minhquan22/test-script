@@ -1,61 +1,109 @@
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
-getgenv().Key = "0e27b81e4e0521b5db60cebe"
-    getgenv().SettingFarm ={
-        ["Hide UI"] = false,
-        ["Reset Teleport"] = {
-            ["Enabled"] = false,
-            ["Delay Reset"] = 3,
-            ["Item Dont Reset"] = {
-                ["Fruit"] = {
-                    ["Enabled"] = true,
-                    ["All Fruit"] = true, 
-                    ["Select Fruit"] = {
-                        ["Enabled"] = false,
-                        ["Fruit"] = {},
-                    },
-                },
-            },
-        },
-        ["White Screen"] = true,
-        ["Lock Fps"] = {
-            ["Enabled"] = false,
-            ["FPS"] = 20,
-        },
-        ["Get Items"] = {
-            ["Saber"] = true,
-            ["Godhuman"] =  true,
-            ["Skull Guitar"] = true,
-            ["Mirror Fractal"] = true,
-            ["Cursed Dual Katana"] = false,
-            ["Upgrade Race V2-V3"] = true,
-            ["Auto Pull Lever"] = true,
-        },
-        ["Auto Summon Rip Indra"] = true, --- auto buy haki and craft haki legendary 
-        ["Select Hop"] = { -- 70% will have it
-            ["Hop Server If Have Player Near"] = false, 
-            ["Hop Find Rip Indra Get Valkyrie Helm or Get Tushita"] = true, 
-            ["Hop Find Dough King Get Mirror Fractal"] = false,
-            ["Hop Find Raids Castle [CDK]"] = true,
-            ["Hop Find Cake Queen [CDK]"] = true,
-            ["Hop Find Soul Reaper [CDK]"] = true,
-            ["Hop Find Darkbeard [SG]"] = true,
-            ["Hop Find Mirage [ Pull Lever ]"] = false,
-        },
-        ["Buy Haki"] = {
-            ["Enhancement"] = false,
-            ["Skyjump"] = true,
-            ["Flash Step"] = true,
-            ["Observation"] = true,
-        },
-        ["Sniper Fruit Shop"] = {
-            ["Enabled"] = true, -- Auto Buy Fruit in Shop Mirage and Normal
-            ["Fruit"] = {"Leopard-Leopard","Kitsune-Kitsune","Dragon-Dragon","Yeti-Yeti","Gas-Gas"},
-        },
-        ["Lock Fruit"] = {},
-        ["Webhook"] = {
-            ["Enabled"] = false,
-            ["WebhookUrl"] = "",
-        }
-    }
-    
-loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/main/BananaCat-kaitunBF.lua"))()
+-- Speed Hack Script for Blox Fruits with OrionLib UI
+-- Created by: Grok 3
+-- Last updated: April 13, 2025
+
+-- Load OrionLib
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Configuration
+local Config = {
+    SpeedEnabled = false,
+    CustomSpeed = 16 -- Default WalkSpeed (Roblox default is 16)
+}
+
+-- Function to update WalkSpeed
+local function UpdateSpeed()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        local humanoid = LocalPlayer.Character.Humanoid
+        if Config.SpeedEnabled then
+            humanoid.WalkSpeed = Config.CustomSpeed
+        else
+            humanoid.WalkSpeed = 16 -- Reset to default
+        end
+    end
+end
+
+-- Monitor character changes
+LocalPlayer.CharacterAdded:Connect(function(character)
+    if Config.SpeedEnabled then
+        task.wait(0.5) -- Wait for character to fully load
+        UpdateSpeed()
+    end
+end)
+
+-- Create UI
+local Window = OrionLib:MakeWindow({
+    Name = "Speed Hack | Blox Fruits",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "SpeedHack"
+})
+
+local SpeedTab = Window:MakeTab({
+    Name = "Speed Control",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Toggle for enabling/disabling speed hack
+SpeedTab:AddToggle({
+    Name = "Enable Speed Hack",
+    Default = false,
+    Callback = function(Value)
+        Config.SpeedEnabled = Value
+        UpdateSpeed()
+        OrionLib:MakeNotification({
+            Name = "Speed Hack",
+            Content = Value and "Speed hack enabled!" or "Speed hack disabled!",
+            Image = "rbxassetid://4483345998",
+            Time = 3
+        })
+    end
+})
+
+-- Slider for adjusting speed
+SpeedTab:AddSlider({
+    Name = "Walk Speed",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Color = Color3.fromRGB(0, 170, 255),
+    Increment = 1,
+    ValueName = "Speed",
+    Callback = function(Value)
+        Config.CustomSpeed = Value
+        UpdateSpeed()
+        OrionLib:MakeNotification({
+            Name = "Speed Hack",
+            Content = "Speed set to: " .. Value,
+            Image = "rbxassetid://4483345998",
+            Time = 3
+        })
+    end
+})
+
+-- Notification on script load
+OrionLib:MakeNotification({
+    Name = "Speed Hack",
+    Content = "Script loaded successfully!",
+    Image = "rbxassetid://4483345998",
+    Time = 5
+})
+
+-- Initialize UI
+OrionLib:Init()
+
+-- Handle character reset or death
+spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if Config.SpeedEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = Config.CustomSpeed
+            end
+        end)
+    end
+end)
