@@ -1,17 +1,11 @@
--- Speed Hack Script for Blox Fruits with Kavo UI
+-- Speed Hack Script for Blox Fruits with Fluent UI
 -- Created by: Grok 3
 -- Last updated: April 13, 2025
 
--- Load Kavo UI Library
-local success, Library = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+-- Load Fluent UI Library
+local success, Fluent = pcall(function()
+    return loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 end)
-
--- Check if library loaded successfully
-if not success or not Library then
-    game:GetService("Players").LocalPlayer:Kick("Failed to load UI library. Please try again later or contact support.")
-    return
-end
 
 -- Services
 local Players = game:GetService("Players")
@@ -45,29 +39,113 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
--- Create UI with Kavo
-local Window = Library.CreateLib("Speed Hack | Blox Fruits", "OceanTheme")
+-- Create UI or fallback
+if success and Fluent then
+    -- Initialize Fluent UI
+    local Window = Fluent:CreateWindow({
+        Title = "Speed Hack | Blox Fruits",
+        SubTitle = "by Grok 3",
+        TabWidth = 160,
+        Size = UDim2.fromOffset(580, 460),
+        Theme = "Dark",
+        Acrylic = true,
+        MinimizeKey = Enum.KeyCode.LeftControl
+    })
 
--- Speed Control Tab
-local SpeedTab = Window:NewTab("Speed Control")
-local SpeedSection = SpeedTab:NewSection("Adjust Character Speed")
+    -- Speed Control Tab
+    local Tabs = {
+        Speed = Window:AddTab({ Title = "Speed Control", Icon = "speed" })
+    }
 
--- Toggle for enabling/disabling speed hack
-SpeedSection:NewToggle("Enable Speed Hack", "Turn on/off speed hack", function(state)
-    Config.SpeedEnabled = state
+    -- Toggle for enabling/disabling speed hack
+    Tabs.Speed:AddToggle("SpeedToggle", {
+        Title = "Enable Speed Hack",
+        Description = "Turn on/off speed hack",
+        Default = false,
+        Callback = function(value)
+            Config.SpeedEnabled = value
+            UpdateSpeed()
+            Fluent:Notify({
+                Title = "Speed Hack",
+                Content = value and "Speed hack enabled!" or "Speed hack disabled!",
+                Duration = 3
+            })
+        end
+    })
+
+    -- Slider for adjusting speed
+    Tabs.Speed:AddSlider("SpeedSlider", {
+        Title = "Walk Speed",
+        Description = "Adjust character speed (16-500)",
+        Default = 16,
+        Min = 16,
+        Max = 500,
+        Rounding = 1,
+        Callback = function(value)
+            Config.CustomSpeed = value
+            UpdateSpeed()
+            Fluent:Notify({
+                Title = "Speed Hack",
+                Content = "Speed set to: " .. value,
+                Duration = 3
+            })
+        end
+    })
+
+    -- Notification on script load
+    Fluent:Notify({
+        Title = "Speed Hack",
+        Content = "Script loaded successfully!",
+        Duration = 5
+    })
+
+    -- Select the Speed tab by default
+    Window:SelectTab(1)
+else
+    -- Fallback if UI library fails to load
+    warn("Failed to load Fluent UI Library. Using default speed hack without UI.")
+    Config.SpeedEnabled = true
+    Config.CustomSpeed = 50 -- Default speed if no UI
     UpdateSpeed()
-    Library:Notify("Speed Hack", state and "Speed hack enabled!" or "Speed hack disabled!", 3)
-end)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Speed Hack",
+        Text = "UI failed to load. Using default speed: 50",
+        Duration = 5
+    })
 
--- Slider for adjusting speed
-SpeedSection:NewSlider("Walk Speed", "Set character speed (16-500)", 500, 16, function(value)
-    Config.CustomSpeed = value
-    UpdateSpeed()
-    Library:Notify("Speed Hack", "Speed set to: " .. value, 3)
-end)
-
--- Notification on script load
-Library:Notify("Speed Hack", "Script loaded successfully!", 5)
+    -- Allow manual toggle via chat command (type in chat: /speedon or /speedoff)
+    LocalPlayer.Chatted:Connect(function(message)
+        if message == "/speedon" then
+            Config.SpeedEnabled = true
+            UpdateSpeed()
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Speed Hack",
+                Text = "Speed hack enabled!",
+                Duration = 3
+            })
+        elseif message == "/speedoff" then
+            Config.SpeedEnabled = false
+            UpdateSpeed()
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Speed Hack",
+                Text = "Speed hack disabled!",
+                Duration = 3
+            })
+        elseif message:match("^/speed (%d+)$") then
+            local newSpeed = tonumber(message:match("^/speed (%d+)$"))
+            if newSpeed and newSpeed >= 16 and newSpeed <= 500 then
+                Config.CustomSpeed = newSpeed
+                Config.SpeedEnabled = true
+                UpdateSpeed()
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "Speed Hack",
+                    Text = "Speed set to: " .. newSpeed,
+                    Duration = 3
+                })
+            end
+        end
+    end)
+end
 
 -- Handle character reset or death
 spawn(function()
