@@ -1,9 +1,17 @@
--- Speed Hack Script for Blox Fruits with OrionLib UI
+-- Speed Hack Script for Blox Fruits with Kavo UI
 -- Created by: Grok 3
 -- Last updated: April 13, 2025
 
--- Load OrionLib
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+-- Load Kavo UI Library
+local success, Library = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+end)
+
+-- Check if library loaded successfully
+if not success or not Library then
+    game:GetService("Players").LocalPlayer:Kick("Failed to load UI library. Please try again later or contact support.")
+    return
+end
 
 -- Services
 local Players = game:GetService("Players")
@@ -17,14 +25,16 @@ local Config = {
 
 -- Function to update WalkSpeed
 local function UpdateSpeed()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        local humanoid = LocalPlayer.Character.Humanoid
-        if Config.SpeedEnabled then
-            humanoid.WalkSpeed = Config.CustomSpeed
-        else
-            humanoid.WalkSpeed = 16 -- Reset to default
+    pcall(function()
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            local humanoid = LocalPlayer.Character.Humanoid
+            if Config.SpeedEnabled then
+                humanoid.WalkSpeed = Config.CustomSpeed
+            else
+                humanoid.WalkSpeed = 16 -- Reset to default
+            end
         end
-    end
+    end)
 end
 
 -- Monitor character changes
@@ -35,67 +45,29 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     end
 end)
 
--- Create UI
-local Window = OrionLib:MakeWindow({
-    Name = "Speed Hack | Blox Fruits",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "SpeedHack"
-})
+-- Create UI with Kavo
+local Window = Library.CreateLib("Speed Hack | Blox Fruits", "OceanTheme")
 
-local SpeedTab = Window:MakeTab({
-    Name = "Speed Control",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+-- Speed Control Tab
+local SpeedTab = Window:NewTab("Speed Control")
+local SpeedSection = SpeedTab:NewSection("Adjust Character Speed")
 
 -- Toggle for enabling/disabling speed hack
-SpeedTab:AddToggle({
-    Name = "Enable Speed Hack",
-    Default = false,
-    Callback = function(Value)
-        Config.SpeedEnabled = Value
-        UpdateSpeed()
-        OrionLib:MakeNotification({
-            Name = "Speed Hack",
-            Content = Value and "Speed hack enabled!" or "Speed hack disabled!",
-            Image = "rbxassetid://4483345998",
-            Time = 3
-        })
-    end
-})
+SpeedSection:NewToggle("Enable Speed Hack", "Turn on/off speed hack", function(state)
+    Config.SpeedEnabled = state
+    UpdateSpeed()
+    Library:Notify("Speed Hack", state and "Speed hack enabled!" or "Speed hack disabled!", 3)
+end)
 
 -- Slider for adjusting speed
-SpeedTab:AddSlider({
-    Name = "Walk Speed",
-    Min = 16,
-    Max = 500,
-    Default = 16,
-    Color = Color3.fromRGB(0, 170, 255),
-    Increment = 1,
-    ValueName = "Speed",
-    Callback = function(Value)
-        Config.CustomSpeed = Value
-        UpdateSpeed()
-        OrionLib:MakeNotification({
-            Name = "Speed Hack",
-            Content = "Speed set to: " .. Value,
-            Image = "rbxassetid://4483345998",
-            Time = 3
-        })
-    end
-})
+SpeedSection:NewSlider("Walk Speed", "Set character speed (16-500)", 500, 16, function(value)
+    Config.CustomSpeed = value
+    UpdateSpeed()
+    Library:Notify("Speed Hack", "Speed set to: " .. value, 3)
+end)
 
 -- Notification on script load
-OrionLib:MakeNotification({
-    Name = "Speed Hack",
-    Content = "Script loaded successfully!",
-    Image = "rbxassetid://4483345998",
-    Time = 5
-})
-
--- Initialize UI
-OrionLib:Init()
+Library:Notify("Speed Hack", "Script loaded successfully!", 5)
 
 -- Handle character reset or death
 spawn(function()
